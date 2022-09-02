@@ -1,0 +1,27 @@
+TSP,TSP Name,Eff Gas Day/Eff Time,CycleDesc,Loc Purp Desc,Meas Basis Desc,Post Date/Post Time,Loc/QTI Desc,Unnamed: 8,Unnamed: 9,Unnamed: 10,Unnamed: 11
+13541571,RUBY PIPELINE,9/2/2022  09:00 CCT,EVENING,Delivery Location,Million BTU's (displayed as Dth),09/01/2022 08:48:09 PM,Delivery points(s) quantity,,,,
+,,,,,,,,,,,
+Loc,Loc Name,Loc Zn,Loc (Segment),Design Capacity,Operating Capacity,Total Scheduled Quantity,Operationally Available Capacity,IT,Flow Ind,All Qty Avail,Qty Reason
+48351,GRTBSIN/RUBY (JDF) JADE FLATS DEL E,24,50,"74,200","74,200","1,135","73,065",N,D,Y,
+55160,RED ROCK/RUBY (TED)THUNDEREGG DELIV,24,60,"32,000","32,000",0,"32,000",N,D,Y,
+800842,NEVENER/RUBY (GPN) GOLD PAN DELIVER,24,50,"43,300","43,300","6,000","37,300",N,D,Y,
+801215,SPIRESTW/RUBY (GEM) GEMSTONE CANYON,24,20,"453,900","453,900",0,"453,900",N,BD,Y,
+942000,GRTBSIN/RUBY (OPV) OPAL VALLEY DELI,24,50,"213,300","213,300",80,"213,220",N,D,Y,
+942001,TUSCAROR/RUBY (SFR) SAPPHIRE MOUNTA,24,60,"356,000","356,000",0,"356,000",N,D,Y,
+942002,GASTRANS/RUBY (TQF) TURQUOISE FLATS,24,60,"1,070,000","1,070,000",0,"1,070,000",N,D,Y,
+942004,PACGAS/RUBY (OXH) ONYX HILL DELIVER,24,60,"1,683,900","1,683,900","363,705","1,320,195",Y,D,Y,
+Row Count: 8,,,,,,,,,,,
+,,,,,,,,,,,
+Comments and Notes,,,,,,,,,,,
+"1) Design Capacity displays the quantity that can be accurately measured as determined by utilizing a reasonable set of engineering assumptions and parameters. However, the ability to physically receive or deliver volumes may be further limited by lateral, mainline, and/or storage facility injection/withdrawal capacity.  Design Capacity may be updated when pressure assumptions and pipeline conditions change. 
+
+2) Operationally Available Capacity may be updated throughout the day to account for changes including, but not limited to: netting of bidirectional nominations, partial segment path nominations, facility outages, and imbalance management.
+
+3) Total Scheduled Quantity is the net of scheduled volumes in both flow directions and is displayed only in the resulting net flow direction.  The opposite flow direction, if shown, will display a quantity of zero.
+
+4) The net Total Scheduled Quantity may result in a quantity different than Operating Capacity due to the confirmation process after scheduling.
+
+5) Operating Capacity may be different than Design Capacity based on the periodic, non-permanent anticipated or observed operational pipeline conditions including,but not limited to: higher or lower average thermal content of the gas, higher or lower  pressure from interconnecting pipelines, on-going maintenance, etc.",,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
