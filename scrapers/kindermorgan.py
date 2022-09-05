@@ -7,11 +7,10 @@ import shutil
 import pandas as pd
 import os
 
-
-
 logger = logging.getLogger(__name__)
 LOCAL_DATA_FOLDER = './DATA'
 _output_folder = f'{LOCAL_DATA_FOLDER}/scraper_output'
+
 
 class Kindermorgan(PipelineScraper):
     source = "pipeline2.kindermorgan"
@@ -38,7 +37,7 @@ class Kindermorgan(PipelineScraper):
     def __init__(self, job_id):
         PipelineScraper.__init__(self, job_id, web_url=self.api_url, source=self.source)
 
-    def get_payload(self,post_date=None):
+    def get_payload(self, post_date=None):
         response = self.session.get(self.get_url)
         new_response = HtmlResponse(url="my HTML string", body=response.text, encoding='utf-8')
 
@@ -48,10 +47,9 @@ class Kindermorgan(PipelineScraper):
         __VIEWSTATEGENERATOR = new_response.css("#__VIEWSTATEGENERATOR::attr(value)").extract_first("")
         __EVENTVALIDATION = new_response.css("#__EVENTVALIDATION::attr(value)").extract_first("")
 
-
         form_data = {
             'ctl00$WebSplitter1$tmpl1$ContentPlaceHolder1$HeaderBTN1$DownloadDDL': 'EXCEL',
-            'WebSplitter1_tmpl1_ContentPlaceHolder1_dtePickerBegin_clientState': '|0|01'+post_date+'-0-0-0-0||[[[[]],[],[]],[{},[]],"01'+post_date+'-0-0-0-0"]',
+            'WebSplitter1_tmpl1_ContentPlaceHolder1_dtePickerBegin_clientState': '|0|01' + post_date + '-0-0-0-0||[[[[]],[],[]],[{},[]],"01' + post_date + '-0-0-0-0"]',
             '__EVENTTARGET': __EVENTTARGET,
             '__EVENTARGUMENT': __EVENTARGUMENT,
             '__VIEWSTATE': __VIEWSTATE,
@@ -78,8 +76,9 @@ class Kindermorgan(PipelineScraper):
 
             with open(filename, "wb") as file:
                 file.write(response.content)
-            df = pd.read_excel(filename,engine='openpyxl')
-            self.save_result(df,post_date,local_file=True)
+            df = pd.read_excel(filename, engine='openpyxl')
+            new_data_frame = self.convert_excel(filename)
+            self.save_result(new_data_frame, post_date, local_file=True)
             if os.path.isfile(filename):
                 os.remove(filename)
 
@@ -87,6 +86,51 @@ class Kindermorgan(PipelineScraper):
 
         except Exception as ex:
             logger.error(ex, exc_info=True)
+
+    def convert_excel(self, filename):
+        data = pd.read_excel(filename, engine='openpyxl')
+        data2 = pd.read_excel(filename, engine='openpyxl', skiprows=3)
+
+        columns2 = data2.columns.ravel()
+        columns = data.columns.ravel()
+        final_columns = []
+
+        for info in columns:
+            if "Unnamed" not in info:
+                final_columns.append(info)
+
+        for col in columns2:
+            final_columns.append(col)
+
+        count = 0
+        raw_dict = {}
+        for name in data.iterrows():
+            if count == 0:
+                raw_dict = name[1]
+            count = count + 1
+
+        header_dict = {}
+        for key in raw_dict.keys():
+            if "Unnamed" not in key:
+                header_dict[key] = raw_dict[key]
+
+        list_data = []
+
+        for info in data2.iterrows():
+            dict_data = info[1].to_dict()
+
+            if str(dict_data["Loc Name"]) != "nan":
+                # for header_info in header_dict:
+                final_dict = {**header_dict, **dict_data}
+                list_data.append(final_dict)
+
+        df = pd.DataFrame(columns=final_columns)
+
+        counter = 1
+        for data in list_data:
+            df.loc[counter] = data.values()
+            counter = counter + 1
+        return df
 
 
 def back_fill_pipeline_date():
