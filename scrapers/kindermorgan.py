@@ -80,8 +80,8 @@ class Kindermorgan(PipelineScraper):
             df = pd.read_excel(filename, engine='openpyxl')
             new_data_frame = self.convert_excel(filename)
             self.save_result(new_data_frame, post_date, local_file=True)
-            # if os.path.isfile(filename):
-            #     os.remove(filename)
+            if os.path.isfile(filename):
+                os.remove(filename)
 
 
 
