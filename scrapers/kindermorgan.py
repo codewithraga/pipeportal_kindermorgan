@@ -1,9 +1,8 @@
 import uuid
-from datetime import date, timedelta
 import logging
 from scrapers import PipelineScraper
 from scrapy.http import HtmlResponse
-import shutil
+from datetime import date, timedelta
 import pandas as pd
 import os
 
@@ -37,7 +36,7 @@ class Kindermorgan(PipelineScraper):
     def __init__(self, job_id):
         PipelineScraper.__init__(self, job_id, web_url=self.api_url, source=self.source)
 
-    def get_payload(self, post_date=None):
+    def get_payload(self, cycle: int = None, post_date=None):
         response = self.session.get(self.get_url)
         new_response = HtmlResponse(url="my HTML string", body=response.text, encoding='utf-8')
 
@@ -56,16 +55,18 @@ class Kindermorgan(PipelineScraper):
             '__VIEWSTATEGENERATOR': __VIEWSTATEGENERATOR,
             '__EVENTVALIDATION': __EVENTVALIDATION,
             '__ASYNCPOST': 'true',
+            'WebSplitter1_tmpl1_ContentPlaceHolder1_ddlCycleDD_clientState': '|0|&tilda;2||[[[[null,null,null,null,null,null,null,-1,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"TIMELY",null,null,null,null,null,null,null,null,null,null,null,null,null,0,0,null,null,1,null,null,null,null,null,null,null,null]],[],null],[{"0":[41,'+str(cycle)+'],"1":[7,'+str(cycle)+'],"2":[23,"EVENING"]},[{"0":[1,0,17],"1":["2",0,81],"2":[1,9,0],"3":["2",9,1],"5":["2",7,1],"6":[1,7,0]}]],null]',
             'ctl00$WebSplitter1$tmpl1$ContentPlaceHolder1$HeaderBTN1$btnDownload.x': '50',
             'ctl00$WebSplitter1$tmpl1$ContentPlaceHolder1$HeaderBTN1$btnDownload.y': '11',
         }
         return form_data
 
-    def start_scraping(self, post_date=None):
+    def start_scraping(self, cycle=None, post_date=None):
         try:
+            post_date = post_date if post_date is not None else date.today()
             logger.info('Scraping %s pipeline gas for post date: %s', self.source, post_date)
-            post_date = date.today()
-            payload = self.get_payload(post_date.strftime('%Y-%-m-%d'))
+
+            payload = self.get_payload(cycle, post_date.strftime('%Y-%-m-%d'))
 
             response = self.session.post(self.post_data_url, data=payload, headers=self.post_page_headers)
             response.raise_for_status()
@@ -79,8 +80,8 @@ class Kindermorgan(PipelineScraper):
             df = pd.read_excel(filename, engine='openpyxl')
             new_data_frame = self.convert_excel(filename)
             self.save_result(new_data_frame, post_date, local_file=True)
-            if os.path.isfile(filename):
-                os.remove(filename)
+            # if os.path.isfile(filename):
+            #     os.remove(filename)
 
 
 
@@ -135,14 +136,20 @@ class Kindermorgan(PipelineScraper):
 
 def back_fill_pipeline_date():
     scraper = Kindermorgan(job_id=str(uuid.uuid4()))
+    custom_cycle = 2
+    # set desired cycle: TIMELY=1,EVENING=2, INTRADAY 1=3, INTRADAY 2=4,INTRADAY 3=5
+
     for i in range(90, -1, -1):
         post_date = (date.today() - timedelta(days=i))
         scraper.start_scraping(post_date)
 
 
 def main():
+    custom_cycle = 2
+    # set desired cycle: TIMELY=1,EVENING=2, INTRADAY 1=3, INTRADAY 2=4,INTRADAY 3=5
+    custom_date = date.fromisoformat('2022-06-30')
     scraper = Kindermorgan(job_id=str(uuid.uuid4()))
-    scraper.start_scraping()
+    scraper.start_scraping(cycle=custom_cycle, post_date=custom_date)
 
 
 if __name__ == '__main__':
